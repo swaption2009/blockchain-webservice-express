@@ -35,12 +35,11 @@ class BlockController {
      */
     postNewBlock() {
         this.app.post("/block", (req, res) => {
-            // Add your code here
-            // get 'data' param from req
-            // initialize new BlockClass with `data`
-            // add BlockClass to blocks
-            // res: done
-            res.send('posting...' + req.body.data)
+            let postBlock = new BlockClass.Block(`${req.body.data}`);
+            postBlock.height = this.blocks.length;
+            postBlock.hash = SHA256(JSON.stringify(postBlock)).toString();
+            this.blocks.push(postBlock);
+            res.json(postBlock);
         });
     }
 
