@@ -19,20 +19,28 @@ class BlockController {
     }
 
     /**
-     * Implement a GET Endpoint to retrieve a block by index, url: "/api/block/:index"
+     * Implement a GET Endpoint to retrieve a block by index, url: "/block/:height"
      */
     getBlockByIndex() {
         this.app.get("/block/:index", (req, res) => {
             // Add your code here
+            // get 'height' param from req
+            // res: blocks with index=height
+            res.send('getting index: ' + req.params.index);
         });
     }
 
     /**
-     * Implement a POST Endpoint to add a new Block, url: "/api/block"
+     * Implement a POST Endpoint to add a new Block, url: "/block"
      */
     postNewBlock() {
         this.app.post("/block", (req, res) => {
             // Add your code here
+            // get 'data' param from req
+            // initialize new BlockClass with `data`
+            // add BlockClass to blocks
+            // res: done
+            res.send('posting...' + req.body.data)
         });
     }
 
