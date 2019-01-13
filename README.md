@@ -24,6 +24,11 @@ This is the implementation of P3 project to build a webservice using ExpressJS t
 - function: `postNewBlock()`
 
 
+## Error handling
+
+1. `getBlockByIndex()`: validate if index is not in blockchain.
+2. `postNewBlock()`: validate if block data is not empty.
+
 ## License
 
 MIT License: you're free to do anything with this code

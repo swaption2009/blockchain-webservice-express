@@ -23,8 +23,15 @@ class BlockController {
      */
     getBlockByIndex() {
         this.app.get("/block/:index", (req, res) => {
+            // validate if index is not in blockchain
+            if(req.params.index > this.blocks.length) {
+                res.send('Index is not in blockchain!');
+            }
+
+            // build query
             const index = req.params.index;
             const indexBlock = JSON.stringify(this.blocks[index])
+            // return query to webservice
             res.send(indexBlock);
         });
     }
@@ -34,6 +41,12 @@ class BlockController {
      */
     postNewBlock() {
         this.app.post("/block", (req, res) => {
+            // validate if req.body.data is null
+            if(req.body.constructor === Object && Object.keys(req.body).length === 0) {
+                res.send('Blockchain data cannot be empty!');
+            }
+
+            // build new Block
             let postBlock = new BlockClass.Block(`${req.body.data}`);
             postBlock.height = this.blocks.length;
             postBlock.hash = SHA256(JSON.stringify(postBlock)).toString();
@@ -41,8 +54,9 @@ class BlockController {
             if(this.blocks.length>0) {
                 postBlock.previousBlockHash = this.blocks[this.blocks.length-1].hash;
             }
-
+            // add to blockchain
             this.blocks.push(postBlock);
+            // send response to webservice
             res.json(postBlock);
         });
     }
