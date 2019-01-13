@@ -38,6 +38,11 @@ class BlockController {
             let postBlock = new BlockClass.Block(`${req.body.data}`);
             postBlock.height = this.blocks.length;
             postBlock.hash = SHA256(JSON.stringify(postBlock)).toString();
+
+            if(this.blocks.length>0) {
+                postBlock.previousBlockHash = this.blocks[this.blocks.length-1].hash;
+            }
+
             this.blocks.push(postBlock);
             res.json(postBlock);
         });
