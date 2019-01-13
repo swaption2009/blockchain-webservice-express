@@ -1,12 +1,29 @@
-# Express.JS Exercise with Node.js
+# Udacity Blockchain P3: RESTful Web API with ExpressJS
 
-In this exercise you will practice a creation of a web service that respond with the block hash.
+This is the implementation of P3 project to build a webservice using ExpressJS to interact with blockchain.
 
-## Steps to follow
+
+## How to use this app
 
 1. Clone the repository to your local computer.
 2. Open the terminal and install the packages: `npm install`.
 3. Open the file `app.js`and `BlockController.js` and start coding.
 4. Run your application `node app.js`
-5. Test your Endpoints with Curl or Postman.
-6. Answer the quiz in the classroom.
+
+
+## API
+
+1. Get a block from blockchain by index
+
+- Webservice URL: `GET <url address>/block/:index`
+- function: `getBlockByIndex()`
+
+2. Post a new block into blockchain
+
+- Webservice URL: `POST <url address>/block`
+- function: `postNewBlock()`
+
+
+## License
+
+MIT License: you're free to do anything with this code
