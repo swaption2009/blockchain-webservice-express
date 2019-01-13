@@ -23,10 +23,9 @@ class BlockController {
      */
     getBlockByIndex() {
         this.app.get("/block/:index", (req, res) => {
-            // Add your code here
-            // get 'height' param from req
-            // res: blocks with index=height
-            res.send('getting index: ' + req.params.index);
+            const index = req.params.index;
+            const indexBlock = JSON.stringify(this.blocks[index])
+            res.send(indexBlock);
         });
     }
 
