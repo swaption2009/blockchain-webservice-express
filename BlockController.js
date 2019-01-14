@@ -1,6 +1,25 @@
 const SHA256 = require('crypto-js/sha256');
 const BlockClass = require('./Block.js');
 
+/* ===== Persist data with LevelDB ============================
+|  Learn more: level: https://github.com/Level/level          |
+|  ==========================================================*/
+
+const level = require('level');
+const chainDB = './chaindata';
+const db = level(chainDB);
+
+
+/* ============================================================
+|  import functions from levelSandbox.js                      |
+|  ===========================================================*/
+
+const levelDBData = require('./levelDBHelper');
+let addLevelDBData = levelDBData.addLevelDBData;
+let getLevelDBData = levelDBData.getLevelDBData;
+let addDataToLevelDB = levelDBData.addDataToLevelDB;
+
+
 /**
  * Controller Definition to encapsulate routes to work with blocks
  */
@@ -24,15 +43,21 @@ class BlockController {
     getBlockByIndex() {
         this.app.get("/block/:index", (req, res) => {
             // validate if index is not in blockchain
-            if(req.params.index > this.blocks.length) {
-                res.send('Index is not in blockchain!');
-            }
+            // if(req.params.index > this.blocks.length) {
+            //     res.send('Index is not in blockchain!');
+            // }
 
             // build query
             const index = req.params.index;
-            const indexBlock = JSON.stringify(this.blocks[index])
-            // return query to webservice
-            res.send(indexBlock);
+            // search query in levelDB
+            return new Promise(function(resolve, reject) {
+              let returnedBlock = getLevelDBData(db, index);
+              returnedBlock.then(function(db) {
+                // resolve(res);
+                console.log(db);
+                res.send(db);
+              });
+            });
         });
     }
 
@@ -54,10 +79,15 @@ class BlockController {
             if(this.blocks.length>0) {
                 postBlock.previousBlockHash = this.blocks[this.blocks.length-1].hash;
             }
-            // add to blockchain
+            // add to memory
             this.blocks.push(postBlock);
+            // save into levelDB
+            addLevelDBData(db, postBlock.height, postBlock).then(function(db) {
+                  console.log('Block has been added to levelDB!');
+                  res.json(postBlock);
+            });
             // send response to webservice
-            res.json(postBlock);
+            // res.json(postBlock);
         });
     }
 
@@ -71,6 +101,13 @@ class BlockController {
                 blockAux.height = index;
                 blockAux.hash = SHA256(JSON.stringify(blockAux)).toString();
                 this.blocks.push(blockAux);
+                if(this.blocks.length>0) {
+                    blockAux.previousBlockHash = this.blocks[this.blocks.length-1].hash;
+                }
+                addLevelDBData(db, blockAux.height, blockAux).then(function(db) {
+                  console.log('blockAux has been added to levelDB!');
+                  // res.json(postBlock);
+            });
             }
         }
     }
