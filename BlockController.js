@@ -51,7 +51,7 @@ class BlockController {
                 if (typeof(db) === 'object') {
                     res.send('Block not found in levelDB!')
                 } else {
-                    res.json(db)
+                    res.send(JSON.parse(db))
                 }
               });
             });
