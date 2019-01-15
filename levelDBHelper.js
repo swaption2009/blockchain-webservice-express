@@ -18,7 +18,7 @@ module.exports = {
   getLevelDBData: function(db, key){
     return new Promise(function(resolve, reject) {
       db.get(key, function(err, value) {
-        if (err) return err;
+        if (err) return resolve(err);
         resolve(value);
       });
     });

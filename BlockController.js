@@ -42,20 +42,17 @@ class BlockController {
      */
     getBlockByIndex() {
         this.app.get("/block/:index", (req, res) => {
-            // validate if index is not in blockchain
-            // if(req.params.index > this.blocks.length) {
-            //     res.send('Index is not in blockchain!');
-            // }
-
             // build query
             const index = req.params.index;
             // search query in levelDB
             return new Promise(function(resolve, reject) {
               let returnedBlock = getLevelDBData(db, index);
               returnedBlock.then(function(db) {
-                // resolve(res);
-                console.log(db);
-                res.send(db);
+                if (typeof(db) === 'object') {
+                    res.send('Block not found in levelDB!')
+                } else {
+                    res.json(db)
+                }
               });
             });
         });
@@ -70,12 +67,11 @@ class BlockController {
             if(req.body.constructor === Object && Object.keys(req.body).length === 0) {
                 res.send('Blockchain data cannot be empty!');
             }
-
             // build new Block
             let postBlock = new BlockClass.Block(`${req.body.data}`);
             postBlock.height = this.blocks.length;
             postBlock.hash = SHA256(JSON.stringify(postBlock)).toString();
-
+            // add previousBlock if not Genesis block
             if(this.blocks.length>0) {
                 postBlock.previousBlockHash = this.blocks[this.blocks.length-1].hash;
             }
@@ -86,8 +82,6 @@ class BlockController {
                   console.log('Block has been added to levelDB!');
                   res.json(postBlock);
             });
-            // send response to webservice
-            // res.json(postBlock);
         });
     }
 
@@ -101,12 +95,13 @@ class BlockController {
                 blockAux.height = index;
                 blockAux.hash = SHA256(JSON.stringify(blockAux)).toString();
                 this.blocks.push(blockAux);
+                // add previousHash if not Genesis block
                 if(this.blocks.length>0) {
                     blockAux.previousBlockHash = this.blocks[this.blocks.length-1].hash;
                 }
+                // persist data into levelDB
                 addLevelDBData(db, blockAux.height, blockAux).then(function(db) {
                   console.log('blockAux has been added to levelDB!');
-                  // res.json(postBlock);
             });
             }
         }
